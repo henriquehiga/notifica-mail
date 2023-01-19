@@ -2,8 +2,8 @@ import { config } from "dotenv";
 config();
 
 export default {
-  hostname: process.env.RABBITMQ_HOSTNAME,
-  port: process.env.RABBITMQ_PORT,
-  username: process.env.RABBITMQ_USER,
-  password: process.env.RABBITMQ_PASS
+  hostname: process.env.QUEUE_HOSTNAME,
+  port: process.env.QUEUE_PORT,
+  username: process.env.QUEUE_USER,
+  password: process.env.QUEUE_PASS
 }
