@@ -1,6 +1,6 @@
 # Notifica
 
-O Mailer App é uma aplicação de mala direta que permite que os usuários notifiquem seus clientes sobre produtos através de e-mails. Ele foi construído usando Node.js, TypeScript, arquitetura limpa e RabbitMQ como gerenciador de filas.
+A aplicação de mala direta permite que os usuários notifiquem seus clientes sobre novidades através de e-mails e armazede os emails enviados. Construído usando Node.js, TypeScript, arquitetura limpa e RabbitMQ como gerenciador de filas.
 
 ## Características
 - Envio de e-mails em massa para clientes através de uma fila de envio usando RabbitMQ
