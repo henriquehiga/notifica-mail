@@ -15,7 +15,17 @@ export class SendToQueue {
       if(maladiretaOrError.isLeft()) {
         return left(maladiretaOrError.value);
       }
-      await this.fila.send(queue, maladiretaOrError.value);
+      const maladireta = maladiretaOrError.value;
+      const data: CreateMalaDiretaModel = {
+        cliente : {
+          email: maladireta.cliente.email.value,
+          name: maladireta.cliente.name.value
+        },
+        maladiretaData: {
+          templateCode: maladireta.maladiretaData.templateCode
+        }
+      }
+      await this.fila.send(queue, data);
     }
   }
 }
