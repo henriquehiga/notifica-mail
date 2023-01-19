@@ -1,3 +1,3 @@
-export type EmailDataModel = {
+export type MalaDiretaDataModel = {
   templateCode: string;
 }

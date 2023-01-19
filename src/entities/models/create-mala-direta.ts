@@ -1,7 +1,7 @@
 import { CreateClienteModel } from "./create-cliente";
-import { EmailDataModel } from "./email-data";
+import { MalaDiretaDataModel } from "./email-data";
 
 export type CreateMalaDiretaModel = {
-  createClienteModel: CreateClienteModel;
-  emailData: EmailDataModel;
+  cliente: CreateClienteModel;
+  maladiretaData: MalaDiretaDataModel;
 } 
