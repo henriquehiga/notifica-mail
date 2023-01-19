@@ -1,6 +1,6 @@
+import { QueueContract } from "@/adapters/contracts/queue";
+import { RabbitFilaImpl } from "@/adapters/rabbit-queue-impl";
 import { CreateMalaDiretaModel } from "@/entities/models/create-mala-direta";
-import { QueueContract } from "@/services/contracts/queue";
-import { RabbitFilaImpl } from "@/services/rabbit-queue-impl";
 import { SendToQueue } from "@/usecases/send-to-queue";
 
 describe("SendToQueue Usecase", () => {

@@ -1,9 +1,9 @@
+import { QueueContract } from "@/adapters/contracts/queue";
 import { InvalidEmailError } from "@/entities/errors/invalid-email-error";
 import { InvalidNameError } from "@/entities/errors/invalid-name-error";
 import { InvalidTemplateCode } from "@/entities/errors/invalid-template-code";
 import { MalaDireta } from "@/entities/mala-direta";
 import { CreateMalaDiretaModel } from '@/entities/models/create-mala-direta';
-import { QueueContract } from "@/services/contracts/queue";
 import { Either, left } from "@/shared/either";
 
 export class SendToQueue {

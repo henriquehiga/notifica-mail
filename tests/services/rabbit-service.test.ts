@@ -1,5 +1,5 @@
-import { QueueContract } from "@/services/contracts/queue";
-import { RabbitFilaImpl } from "@/services/rabbit-queue-impl";
+import { QueueContract } from "@/adapters/contracts/queue";
+import { RabbitFilaImpl } from "@/adapters/rabbit-queue-impl";
 
 describe('RabbitMQ Service', () => {
 
