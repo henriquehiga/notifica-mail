@@ -1,5 +1,5 @@
 import cfg from "@/config/queue-config";
-import { QueueContract } from "@/interfaces/contracts/queue";
+import { QueueContract } from "@/services/contracts/queue";
 import amqp, { Channel, Connection } from "amqplib";
 
 export class RabbitFilaImpl implements QueueContract {

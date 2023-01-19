@@ -1,4 +1,4 @@
-import { RabbitFilaImpl } from "@/interfaces/rabbit-queue-impl";
+import { RabbitFilaImpl } from "@/services/rabbit-queue-impl";
 
 describe('RabbitMQ', () => {
   it('espero inserir e resgatar a quantidade de mensagens que eu estipular', async () => {
