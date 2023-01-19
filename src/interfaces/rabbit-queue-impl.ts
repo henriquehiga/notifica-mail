@@ -44,7 +44,7 @@ export class RabbitFilaImpl implements QueueContract {
     await this.connect();
     const queueInfo = await this.channel.checkQueue(queue);
     await this.close();
-    return queueInfo;
+    return queueInfo.messageCount;
   }
 
   public async close() {
