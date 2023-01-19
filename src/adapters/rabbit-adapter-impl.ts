@@ -2,7 +2,7 @@ import cfg from "@/config/queue-config";
 import amqp, { Channel, Connection } from "amqplib";
 import { QueueContract } from "./contracts/queue";
 
-export class RabbitFilaImpl implements QueueContract {
+export class RabbitAdapterImpl implements QueueContract {
   private connection: Connection;
   public channel: Channel;
 

@@ -1,10 +1,10 @@
 import { QueueContract } from "@/adapters/contracts/queue";
-import { RabbitFilaImpl } from "@/adapters/rabbit-queue-impl";
+import { RabbitAdapterImpl } from "@/adapters/rabbit-adapter-impl";
 import { CreateMalaDiretaModel } from "@/entities/models/create-mala-direta";
 import { SendToQueue } from "@/usecases/send-to-queue";
 
 describe("SendToQueue Usecase", () => {
-  const queue: QueueContract = new RabbitFilaImpl(); 
+  const queue: QueueContract = new RabbitAdapterImpl(); 
   const nomeFila = "fila-teste";
 
   afterEach(async () => {

@@ -1,9 +1,9 @@
 import { QueueContract } from "@/adapters/contracts/queue";
-import { RabbitFilaImpl } from "@/adapters/rabbit-queue-impl";
+import { RabbitAdapterImpl } from "@/adapters/rabbit-adapter-impl";
 
 describe('RabbitMQ Adapter', () => {
 
-  const queue: QueueContract = new RabbitFilaImpl(); 
+  const queue: QueueContract = new RabbitAdapterImpl(); 
   const nomeFila = "teste/rabbit-adapter";
 
   afterEach(async () => {
