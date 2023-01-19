@@ -4,37 +4,44 @@ import { RabbitFilaImpl } from "@/services/rabbit-queue-impl";
 import { SendToQueue } from "@/usecases/send-to-queue";
 
 describe("SendToQueue Usecase", () => {
-  test.skip("Executar caso de uso corretamente", async () => {
-    const queue: QueueContract = new RabbitFilaImpl(); 
+  const queue: QueueContract = new RabbitFilaImpl(); 
+  const nomeFila = "fila-teste";
+
+  afterEach(async () => {
+    await queue.deleteQueue(nomeFila);
+  });
+
+  test("espero enviar dados para a fila", async () => {
     const usecase = new SendToQueue(queue);
     const maladiretaData : CreateMalaDiretaModel = {
-      createClienteModel: {
+      cliente: {
         email: "validemail@mail.com",
         name: "valid name"
       },
-      emailData: {
+      maladiretaData: {
         templateCode: "abc-123"
       }
     }
-    const input = [maladiretaData];
-    await usecase.execute(input, "email");
+    const input = [ maladiretaData ];
+    await usecase.execute(input, nomeFila);
+    let data = await queue.get(nomeFila, 1);
+    data = JSON.parse(data[0]);
+    expect(data).toEqual(maladiretaData);
   })
 
-  test("", async () => {
-    for (let index = 0; index < 100; index++) {
-      const queue: QueueContract = new RabbitFilaImpl();
-      const usecase = new SendToQueue(queue);
-      const maladiretaData : CreateMalaDiretaModel = {
-        createClienteModel: {
-          email: "validemail@mail.com",
-          name: "valid name"
-        },
-        emailData: {
-          templateCode: "abc-123"
-        }
+  test("espero não enviar dados para a fila caso nome esteja incorreto", async () => {
+    const usecase = new SendToQueue(queue);
+    const maladiretaData : CreateMalaDiretaModel = {
+      cliente: {
+        email: "validemail@mail.com",
+        name: "invalid_name"
+      },
+      maladiretaData: {
+        templateCode: "abc-123"
       }
-      const input = [maladiretaData, maladiretaData, maladiretaData, maladiretaData];
-      await usecase.execute(input, 'email-teste')
     }
+    const input = [ maladiretaData ];
+    const error = (await usecase.execute(input, nomeFila)).value as Error;
+    expect(error.name).toBe("InvalidNameError");
   })
 })
