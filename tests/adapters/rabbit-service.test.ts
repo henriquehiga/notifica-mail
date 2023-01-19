@@ -1,10 +1,10 @@
 import { QueueContract } from "@/adapters/contracts/queue";
 import { RabbitFilaImpl } from "@/adapters/rabbit-queue-impl";
 
-describe('RabbitMQ Service', () => {
+describe('RabbitMQ Adapter', () => {
 
   const queue: QueueContract = new RabbitFilaImpl(); 
-  const nomeFila = "teste/rabbit-service";
+  const nomeFila = "teste/rabbit-adapter";
 
   afterEach(async () => {
     await queue.deleteQueue(nomeFila);
