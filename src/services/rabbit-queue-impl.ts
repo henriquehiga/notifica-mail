@@ -7,6 +7,12 @@ export class RabbitFilaImpl implements QueueContract {
   public channel: Channel;
 
   constructor() { }
+  
+  async deleteQueue(queue: string): Promise<void> {
+    await this.connect();
+    await this.channel.deleteQueue(queue);
+    await this.close();
+  }
 
   private async connect() {
     let credentials = `amqp://${cfg.username}:${cfg.password}@${cfg.hostname}:${cfg.port}`;
@@ -21,6 +27,15 @@ export class RabbitFilaImpl implements QueueContract {
     const payload = data;
     this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)));
     await this.close();
+  }
+
+  public async listen(queue: string, length: number,  callback: Function) {
+    await this.connect();
+    await this.channel.assertQueue(queue, {
+      durable: true,
+    });
+    await this.channel.prefetch(length, true);
+    await this.channel.consume(queue, (msg) => callback(msg));
   }
 
   public async get(queue: string, length: number) {
