@@ -4,12 +4,12 @@ import { InvalidNameError } from "@/entities/errors/invalid-name-error";
 import { InvalidTemplateCode } from "@/entities/errors/invalid-template-code";
 import { MalaDireta } from "@/entities/mala-direta";
 import { CreateMalaDiretaModel } from '@/entities/models/create-mala-direta';
-import { Either, left } from "@/shared/either";
+import { Either, left, right } from "@/shared/either";
 
 export class SendToQueue {
   constructor(private fila: QueueContract) { }
 
-  async execute(data: CreateMalaDiretaModel[], queue: string) : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode, void>> {
+  async execute(data: CreateMalaDiretaModel[], queue: string) : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode, true>> {
     for(let maladiretaData of data) {
       const maladiretaOrError = MalaDireta.create(maladiretaData);
       if(maladiretaOrError.isLeft()) {
@@ -27,5 +27,6 @@ export class SendToQueue {
       }
       await this.fila.send(queue, data);
     }
+    return right(true);
   }
 }
