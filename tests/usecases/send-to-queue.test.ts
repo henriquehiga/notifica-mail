@@ -7,9 +7,9 @@ describe("SendToQueue Usecase", () => {
   const queue: QueueContract = new RabbitAdapterImpl(); 
   const nomeFila = "fila-teste";
 
-  afterEach(async () => {
-    await queue.deleteQueue(nomeFila);
-  });
+  // afterEach(async () => {
+  //   await queue.deleteQueue(nomeFila);
+  // });
 
   test("espero enviar dados para a fila", async () => {
     const usecase = new SendToQueue(queue);
@@ -43,5 +43,24 @@ describe("SendToQueue Usecase", () => {
     const input = [ maladiretaData ];
     const error = (await usecase.execute(input, nomeFila)).value as Error;
     expect(error.name).toBe("InvalidNameError");
+  })
+
+  test("Popula RABBIT", async () => {
+    const usecase = new SendToQueue(queue);
+    const input = [];
+    for (let index = 0; index < 50; index++) {
+      const maladiretaData : CreateMalaDiretaModel = {
+        cliente: {
+          email: "cary2@ethereal.email",
+          name: "Valid Name"
+        },
+        maladiretaData: {
+          templateCode: "abc-123"
+        }
+      }
+      input.push(maladiretaData);
+    }
+    const response = await usecase.execute(input, nomeFila);
+    expect(response.isRight()).toBeTruthy();
   })
 })
