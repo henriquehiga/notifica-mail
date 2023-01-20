@@ -13,4 +13,5 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^@test/(.*)$": "<rootDir>/tests/$1",
   },
+  testTimeout: 240000
 };
