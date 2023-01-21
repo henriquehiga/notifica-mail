@@ -7,7 +7,7 @@ export class RabbitAdapterImpl implements QueueContract {
   public channel: Channel;
 
   constructor() { }
-  
+
   async deleteQueue(queue: string): Promise<void> {
     await this.connect();
     await this.channel.deleteQueue(queue);
@@ -21,32 +21,22 @@ export class RabbitAdapterImpl implements QueueContract {
     this.channel = await this.connection.createChannel();
   }
 
-  public async send(queue: string, data: any) {
+  public async send(exchange: string, routingKey: string, data: any) {
     await this.connect();
-    await this.channel.assertQueue(queue, { durable: true });
+    await this.channel.assertExchange(exchange, 'direct', { durable: true });
     const payload = data;
-    this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)));
+    this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(payload)));
     await this.close();
   }
 
-  public async listen(queue: string, length: number,  callback: Function) {
+  public async get(exchange: string, queue: string, routingKey: string) {
     await this.connect();
-    await this.channel.assertQueue(queue, {
-      durable: true,
-    });
-    await this.channel.prefetch(length, true);
-    await this.channel.consume(queue, (msg) => callback(msg));
-  }
-
-  public async get(queue: string, length: number) {
-    await this.connect();
-    await this.channel.assertQueue(queue, {
-      durable: true,
-    });
-    await this.channel.prefetch(length, true);
+    await this.channel.assertExchange(exchange, 'direct', { durable: true });
+    await this.channel.assertQueue(queue, { durable: true });
+    await this.channel.bindQueue(queue, exchange, routingKey);
     let data = [];
     await this.channel.consume(queue, async (msg) => {
-      if(msg){
+      if (msg) {
         data.push(msg.content.toString());
         this.channel.ack(msg);
       }

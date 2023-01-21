@@ -9,7 +9,7 @@ import { Either, left, right } from "@/shared/either";
 export class SendToQueue {
   constructor(private fila: QueueContract) { }
 
-  async execute(data: CreateMalaDiretaModel[], queue: string) : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode, true>> {
+  async execute(data: CreateMalaDiretaModel[], exchange: string, routingKey: string) : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode, true>> {
     for(let maladiretaData of data) {
       const maladiretaOrError = MalaDireta.create(maladiretaData);
       if(maladiretaOrError.isLeft()) {
@@ -25,7 +25,7 @@ export class SendToQueue {
           templateCode: maladireta.maladiretaData.templateCode
         }
       }
-      await this.fila.send(queue, data);
+      await this.fila.send(exchange, routingKey, data);
     }
     return right(true);
   }
