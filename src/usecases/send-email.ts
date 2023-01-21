@@ -5,32 +5,68 @@ import { InvalidEmailError } from "@/entities/errors/invalid-email-error";
 import { InvalidNameError } from "@/entities/errors/invalid-name-error";
 import { InvalidTemplateCode } from "@/entities/errors/invalid-template-code";
 import { MalaDireta } from "@/entities/mala-direta";
-import { CreateMalaDiretaModel } from '@/entities/models/create-mala-direta';
-import { Either, left } from "@/shared/either";
+import { Either, left, right } from "@/shared/either";
+import { MailerError } from "./errors/mailer-error";
+import { PersistDatabaseError } from "./errors/persist-database-error";
+import { PersistQueueError } from "./errors/persist-queue-error";
+import { GetEmailsFromQueue } from "./get-emails-from-queue";
+import { GetEmailsModel } from "./models/get-emails-model";
 
 export class SendEmail {
   constructor(
+    private getEmails: GetEmailsFromQueue,
     private maladiretaRepository: MalaDiretaRepository, 
     private templateRepository: MalaDiretaTemplateRepository,
     private mailer: MailerContract
   ) { }
 
-  async execute(data: CreateMalaDiretaModel[]) : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode, void>> {
-    for(let dataMala of data) {
-      dataMala = JSON.parse(dataMala.toString());
-      const maladiretaOrError = MalaDireta.create(dataMala);
-      if(maladiretaOrError.isLeft()) {
-        return left(maladiretaOrError.value);
+  private async resgataDadosFila(): Promise<Either<PersistQueueError, GetEmailsModel>> {
+    const response = await this.getEmails.execute();
+    if(response.isLeft()) {
+      return left(response.value);
+    }
+    return right(response.value);
+  }
+
+  async execute() : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode | MailerError | PersistDatabaseError, void>> {
+    var queueDataOrError = await this.resgataDadosFila();
+    if(queueDataOrError.isLeft()) {
+      return left(queueDataOrError.value);
+    }
+    let queueData = queueDataOrError.value;
+    var quantityQueueData = queueData.count;
+    while(quantityQueueData > 0) {
+      let data = queueData.body; 
+      for(let dataMala of data) {
+        dataMala = JSON.parse(dataMala.toString());
+        const maladiretaOrError = MalaDireta.create(dataMala);
+        if(maladiretaOrError.isLeft()) {
+          return left(maladiretaOrError.value);
+        }
+        let { html, text } = await this.templateRepository.getByCode(dataMala.maladiretaData.templateCode);
+        html = html.replace("%%NOME%%", dataMala.cliente.name);
+        try {
+          await this.mailer.send({
+            to: dataMala.cliente.email,
+            subject: dataMala.maladiretaData.templateCode,
+            html,
+            text
+          });
+        } catch (err) {
+          return left(new MailerError());
+        }
+        try {
+          await this.maladiretaRepository.save(maladiretaOrError.value);
+        } catch (err) {
+          return left(new PersistDatabaseError());
+        }
       }
-      let { html, text } = await this.templateRepository.getByCode(dataMala.maladiretaData.templateCode);
-      html = html.replace("##NOME##", dataMala.cliente.name);
-      await this.mailer.send({
-        to: dataMala.cliente.email,
-        subject: dataMala.maladiretaData.templateCode,
-        html,
-        text
-      });
-      await this.maladiretaRepository.save(maladiretaOrError.value);
+      queueDataOrError = await this.resgataDadosFila();
+      if(queueDataOrError.isLeft()) {
+        return left(queueDataOrError.value);
+      }
+      queueData = queueDataOrError.value;
+      quantityQueueData = queueData.count;
     }
   }
 }
