@@ -17,7 +17,7 @@ export class GetEmailsFromQueue {
   async execute(): Promise<Either<PersistQueueError, GetEmailsModel>> {
     try {
       let quantidadeTotalDadosFila = await this.queue.count(this.queueName);
-      let dadosFila = await this.queue.get(this.exchange, this.queueName, this.routingKey) as CreateMalaDiretaModel[];
+      let dadosFila = JSON.parse(await this.queue.get(this.exchange, this.queueName, this.routingKey)) as CreateMalaDiretaModel[];
       let data = {
         count: quantidadeTotalDadosFila,
         body: dadosFila
