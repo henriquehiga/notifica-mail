@@ -1,21 +1,16 @@
 import { QueueContract } from "@/adapters/contracts/queue";
 import { RabbitAdapterImpl } from "@/adapters/rabbit-adapter-impl";
-import { QUEUE_CONSTANTS } from "@/adapters/utils/constants";
 import { CreateMalaDiretaModel } from "@/entities/models/create-mala-direta";
+import { GetEmailsFromQueue } from "@/usecases/get-emails-from-queue";
+import { GetEmailsModel } from "@/usecases/models/get-emails-model";
 import { SendToQueue } from "@/usecases/send-to-queue";
 
 describe("SendToQueue Usecase", () => {
   const queue: QueueContract = new RabbitAdapterImpl(); 
-  const nomeFila = QUEUE_CONSTANTS.FILA_TESTES;
-  const exchange = QUEUE_CONSTANTS.EXCHANGE;
-  const routingKey = QUEUE_CONSTANTS.ROUTING_KEY;
-  
-  // afterEach(async () => {
-  //   await queue.deleteQueue(nomeFila);
-  // });
 
   test("espero enviar dados para a fila", async () => {
-    const usecase = new SendToQueue(queue);
+    const usecaseSendData = new SendToQueue(queue);
+    const usecaseGetData = new GetEmailsFromQueue(queue);
     const maladiretaData : CreateMalaDiretaModel = {
       cliente: {
         email: "validemail@mail.com",
@@ -26,10 +21,9 @@ describe("SendToQueue Usecase", () => {
       }
     }
     const input = [ maladiretaData ];
-    await usecase.execute(input, exchange, routingKey);
-    let data = await queue.get(exchange, nomeFila, routingKey);
-    data = JSON.parse(data[0]);
-    expect(data).toEqual(maladiretaData);
+    await usecaseSendData.execute(input);
+    let data = (await usecaseGetData.execute()).value as GetEmailsModel;
+    expect(data.body).toEqual(maladiretaData);
   })
 
   test("espero não enviar dados para a fila caso nome esteja incorreto", async () => {
@@ -44,7 +38,7 @@ describe("SendToQueue Usecase", () => {
       }
     }
     const input = [ maladiretaData ];
-    const error = (await usecase.execute(input, exchange, routingKey)).value as Error;
+    const error = (await usecase.execute(input)).value as Error;
     expect(error.name).toBe("InvalidNameError");
   })
 })
