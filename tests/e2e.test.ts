@@ -19,5 +19,6 @@ test("Teste e2e", async () => {
   })
   const usecaseGetEmails = new GetEmailsFromQueue(queue);
   const usecaseSendEmail = new SendEmail(usecaseGetEmails, maladiretaRepository, templateRepository, mailer);
-  await usecaseSendEmail.execute();
+  const response = await usecaseSendEmail.execute();
+  expect(response.isRight()).toBeTruthy();
 })
