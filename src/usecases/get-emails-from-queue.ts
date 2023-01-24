@@ -1,8 +1,7 @@
 import { QueueContract } from "@/adapters/contracts/queue";
 import { QUEUE_CONSTANTS } from "@/adapters/utils/constants";
-import { CreateMalaDiretaModel } from "@/entities/models/create-mala-direta";
 import { Either, left, right } from "@/shared/either";
-import { PersistQueueError } from "./errors/persist-queue-error";
+import { GetDataQueueError } from "./errors/get-data-queue-error";
 import { GetEmailsModel } from "./models/get-emails-model";
 
 export class GetEmailsFromQueue {
@@ -14,17 +13,17 @@ export class GetEmailsFromQueue {
     private queue: QueueContract,
   ) { }
 
-  async execute(): Promise<Either<PersistQueueError, GetEmailsModel>> {
+  async execute(): Promise<Either<GetDataQueueError, GetEmailsModel>> {
     try {
       let quantidadeTotalDadosFila = await this.queue.count(this.queueName);
-      let dadosFila = JSON.parse(await this.queue.get(this.exchange, this.queueName, this.routingKey)) as CreateMalaDiretaModel[];
+      let dadosFila = await this.queue.get(this.exchange, this.queueName, this.routingKey);
       let data = {
         count: quantidadeTotalDadosFila,
         body: dadosFila
       }
       return right(data);
     } catch(err) {
-      return left(new PersistQueueError());
+      return left(new GetDataQueueError());
     }
   }
 }
