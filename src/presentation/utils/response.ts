@@ -4,6 +4,6 @@ export const badRequest = (body: string) => ({
 })
 
 export const created = (body?: string) => ({
-  statusCode: 400,
+  statusCode: 201,
   body: body ?? null
 })
