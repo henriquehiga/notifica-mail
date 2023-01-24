@@ -4,6 +4,7 @@ export interface HttpResponse {
 }
 
 export interface HttpRequest {
-  body: any;
-  param: string;
+  body?: any;
+  param?: string | string[];
+  authorization?: string;
 }
