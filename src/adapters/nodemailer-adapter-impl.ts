@@ -7,18 +7,26 @@ export class NodemailerAdapterImpl implements MailerContract {
   constructor() { }
 
   async getTransporter() {
-    let transporter = nodemailer.createTransport(config);
-    return transporter;
+    try {
+      let transporter = nodemailer.createTransport(config);
+      return transporter;
+    } catch(err) {
+      throw new Error();
+    }
   }
 
   async send({ html, subject, text, to } : MailSendData) {
-    const transporter = await this.getTransporter();
-    await transporter.sendMail({
-      from : process.env.MAIL_EMAIL,
-      to,
-      subject,
-      text,
-      html,
-    });
+    try {
+      const transporter = await this.getTransporter();
+      await transporter.sendMail({
+        from : process.env.MAIL_EMAIL,
+        to,
+        subject,
+        text,
+        html,
+      });
+    } catch(err) {
+      throw new Error();
+    }
   };
 }
