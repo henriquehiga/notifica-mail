@@ -14,7 +14,7 @@ describe('RabbitMQ Adapter', () => {
 
   it('espero inserir mensagens na fila', async () => {
     for(let i = 0; i < 20; i++) {
-      await queue.send(nomeExchange, nomeRoutingKey, {
+      await queue.send(nomeFila, nomeExchange, nomeRoutingKey, {
         name: "valid name " + i,
         email: "validemail@mail.com"
       });
