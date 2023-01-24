@@ -1,8 +1,5 @@
 import { QueueContract } from "@/adapters/contracts/queue";
 import { QUEUE_CONSTANTS } from "@/adapters/utils/constants";
-import { InvalidEmailError } from "@/entities/errors/invalid-email-error";
-import { InvalidNameError } from "@/entities/errors/invalid-name-error";
-import { InvalidTemplateCode } from "@/entities/errors/invalid-template-code";
 import { MalaDireta } from "@/entities/mala-direta";
 import { CreateMalaDiretaModel } from '@/entities/models/create-mala-direta';
 import { Either, left, right } from "@/shared/either";
@@ -13,7 +10,7 @@ export class SendToQueue {
 
   constructor(private fila: QueueContract) { }
 
-  async execute(data: CreateMalaDiretaModel[]) : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode, true>> {
+  async execute(data: CreateMalaDiretaModel[]) : Promise<Either<Error, true>> {
     for(let maladiretaData of data) {
       const maladiretaOrError = MalaDireta.create(maladiretaData);
       if(maladiretaOrError.isLeft()) {
