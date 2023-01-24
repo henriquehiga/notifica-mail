@@ -29,15 +29,21 @@ export class RabbitAdapterImpl implements QueueContract {
     }
   }
 
-  public async send(exchange: string, routingKey: string, data: any) {
+  public async send(queueName: string, exchange: string, routingKey: string, data: any) {
     try {
       await this.connect();
       await this.channel.assertExchange(exchange, 'direct', { durable: true });
+      await this.channel.assertQueue(queueName, {
+          durable: true
+      });
+      await this.channel.bindQueue(queueName, exchange, routingKey);
       const payload = data;
-      this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(payload)));
-      await this.close();
-    } catch(err) {
-      throw new Error();
+      this.channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)));
+      setTimeout(async () => {
+        await this.connection.close();
+      }, 500);
+    } catch (err) {
+        throw new Error();
     }
   }
 
