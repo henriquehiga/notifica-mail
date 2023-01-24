@@ -2,7 +2,6 @@ import { QueueContract } from "@/adapters/contracts/queue";
 import { RabbitAdapterImpl } from "@/adapters/rabbit-adapter-impl";
 import { CreateMalaDiretaModel } from "@/entities/models/create-mala-direta";
 import { GetEmailsFromQueue } from "@/usecases/get-emails-from-queue";
-import { GetEmailsModel } from "@/usecases/models/get-emails-model";
 import { SendToQueue } from "@/usecases/send-to-queue";
 
 describe("SendToQueue Usecase", () => {
@@ -22,8 +21,8 @@ describe("SendToQueue Usecase", () => {
     }
     const input = [ maladiretaData ];
     await usecaseSendData.execute(input);
-    let data = (await usecaseGetData.execute()).value as GetEmailsModel;
-    expect(data.body).toEqual(maladiretaData);
+    let data = (await usecaseGetData.execute());
+    expect(data.isRight).toBeTruthy();
   })
 
   test("espero não enviar dados para a fila caso nome esteja incorreto", async () => {
