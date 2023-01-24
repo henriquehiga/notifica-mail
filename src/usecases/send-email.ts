@@ -1,9 +1,6 @@
 import { MailerContract } from "@/adapters/contracts/mailer";
 import { MalaDiretaRepository } from "@/data/contracts/mala-direta-repository";
 import { MalaDiretaTemplateRepository } from "@/data/contracts/mala-direta-template-repository";
-import { InvalidEmailError } from "@/entities/errors/invalid-email-error";
-import { InvalidNameError } from "@/entities/errors/invalid-name-error";
-import { InvalidTemplateCode } from "@/entities/errors/invalid-template-code";
 import { MalaDireta } from "@/entities/mala-direta";
 import { Either, left, right } from "@/shared/either";
 import { MailerError } from "./errors/mailer-error";
@@ -28,7 +25,7 @@ export class SendEmail {
     return right(response.value);
   }
 
-  async execute() : Promise<Either<InvalidEmailError | InvalidNameError | InvalidTemplateCode | MailerError | PersistDatabaseError, void>> {
+  async execute() : Promise<Either<Error, true>> {
     var queueDataOrError = await this.resgataDadosFila();
     if(queueDataOrError.isLeft()) {
       return left(queueDataOrError.value);
@@ -68,5 +65,6 @@ export class SendEmail {
       queueData = queueDataOrError.value;
       quantityQueueData = queueData.count;
     }
+    return right(true);
   }
 }
