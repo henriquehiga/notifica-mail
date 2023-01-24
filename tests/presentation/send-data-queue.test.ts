@@ -1,5 +1,6 @@
 import { QueueContract } from "@/adapters/contracts/queue";
 import { SendDataQueueController } from "@/presentation/controllers/send-data-queue";
+import { SendToQueue } from "@/usecases/send-to-queue";
 
 describe("SendDataQueueController", () => {
 
@@ -17,7 +18,7 @@ describe("SendDataQueueController", () => {
   }
 
   test("espero dar erro caso o nome enviado seja inválido", async () => {
-    const controller = new SendDataQueueController(new MockedQueue());
+    const controller = new SendDataQueueController(new SendToQueue(new MockedQueue()));
     const input = {
       body: [
           {
@@ -39,7 +40,7 @@ describe("SendDataQueueController", () => {
   })
 
   test("espero dar erro caso o email enviado seja inválido", async () => {
-    const controller = new SendDataQueueController(new MockedQueue());
+    const controller = new SendDataQueueController(new SendToQueue(new MockedQueue()));
     const input = {
       body: [
           {
@@ -61,7 +62,7 @@ describe("SendDataQueueController", () => {
   })
 
   test("espero dar erro caso o templateCode enviado seja inválido", async () => {
-    const controller = new SendDataQueueController(new MockedQueue());
+    const controller = new SendDataQueueController(new SendToQueue(new MockedQueue()));
     const input = {
       body: [
           {
@@ -83,7 +84,7 @@ describe("SendDataQueueController", () => {
   })
 
   test("espero enviar dados para a fila com dados válidos", async () => {
-    const controller = new SendDataQueueController(new MockedQueue());
+    const controller = new SendDataQueueController(new SendToQueue(new MockedQueue()));
     const input = {
       body: [
           {
