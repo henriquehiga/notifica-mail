@@ -7,6 +7,7 @@ import { Either, left, right } from "@/shared/either";
 export class SendToQueue {
   private exchange: string = QUEUE_CONSTANTS.EXCHANGE;
   private routingKey = QUEUE_CONSTANTS.ROUTING_KEY;
+  private queueName = QUEUE_CONSTANTS.FILA;
 
   constructor(private fila: QueueContract) { }
 
@@ -26,7 +27,7 @@ export class SendToQueue {
           templateCode: maladireta.maladiretaData.templateCode
         }
       }
-      await this.fila.send(this.exchange, this.routingKey, data);
+      await this.fila.send(this.queueName, this.exchange, this.routingKey, data);
     }
     return right(true);
   }
