@@ -8,6 +8,9 @@ export class InsertTemplateEmail {
   constructor(private readonly repository: MalaDiretaTemplateRepository){ }
   
   async execute(email: HtmlTemplateModel): Promise<Either<Error, true>> {
+    if(!email.code || !email.html || !email.text) {
+      return left(new Error("Campos obrigatórios faltando."));
+    }
     const templateExists = await this.repository.getByCode(email.code);
     if(!templateExists) {
       return left(new TemplateAlreadyExistsError());
