@@ -39,9 +39,7 @@ export class RabbitAdapterImpl implements QueueContract {
       await this.channel.bindQueue(queueName, exchange, routingKey);
       const payload = data;
       this.channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)));
-      setTimeout(async () => {
-        await this.connection.close();
-      }, 500);
+      await this.close();
     } catch (err) {
         throw new Error();
     }
